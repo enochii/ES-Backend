@@ -29,10 +29,7 @@ def login():
 @app.route('/products/page/<page>')
 def get_products(page):
     page = int(page)
-
-    products = pagination.items
-    total_page = pagination.pages
-    return jsonify(total_page)
+    return ''
 
 
 if __name__ == '__main__':
