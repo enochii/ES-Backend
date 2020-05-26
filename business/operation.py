@@ -28,6 +28,9 @@ def query_product(pro_id):
     """
     return Product.query.filter(Product.proid == pro_id).first()
 
+def query_order(order_id):
+    return Order.query.filter(Order.orderid == order_id).first()
+
 
 def get_orders_by_id(user_id):
     """
@@ -88,13 +91,27 @@ def order2dict(order: Order):
 def new_order(form):
     order = Order(form[PROID], form[NUM], form[USER_ID])
     print(order)
-    id = db_session.add(order)
-    print(id)
-    id = db_session.commit()
-    print(id)
+    db_session.add(order)
+    db_session.commit()
 
+def pay_order(orderid):
+    order = query_order(orderid)
+    if order.state == ORDER_PAID: return False
+    order.state = ORDER_PAID # 付款
+    try :
+        # db_session.update(order)
+        db_session.commit()
+    except Exception as e:
+        print(e)
+        return False
+    return True
 
 def new_user(form):
-    user = User(form[USERNAME], form[PASSWORD], form[MAIL])
+    username = form[USERNAME]
+    exist_username = User.query.filter(User.name == username).all()
+    if len(exist_username) != 0:
+        return False
+    user = User(username, form[PASSWORD])
     db_session.add(user)
     db_session.commit()
+    return True

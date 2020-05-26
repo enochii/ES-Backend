@@ -1,5 +1,4 @@
 # 用户
-CODE_SUCCESS = 1
 
 
 def check_user_pwd(user, pwd):
