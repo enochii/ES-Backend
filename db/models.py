@@ -27,6 +27,7 @@ class Product(Base):
     num = Column(Integer)
     price = Column(DECIMAL)
     picture = Column(String(200))
+    desc = Column(String(400))
 
     def __init__(self, name:not None, price, picture):
         self.name = name
@@ -45,8 +46,10 @@ class Order(Base):
     proid = Column(Integer)
     num = Column(Integer)
     state = Column(Integer)
+    userid = Column(Integer)
 
-    def __init__(self, proid, num):
+    def __init__(self, proid, num, userid):
         self.proid = proid
         self.num = num
         self.state = 0 # 刚下单
+        self.userid = userid

@@ -2,9 +2,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
+PRODUCT_PER_PAGE = 8
 
 # Windows 记得换成 ///
-engine = create_engine('sqlite:///db/test.db', convert_unicode=True)
+engine = create_engine('sqlite:///db/web.db', convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
