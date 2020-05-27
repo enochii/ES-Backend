@@ -11,14 +11,17 @@ NAME = 'name'
 PRICE = 'price'
 PICTURE = 'picture'
 NUM = 'num'
-PRO_LABELS = ['proid', 'name', 'price', 'picture', 'num']
+
 ORDER_ID = 'orderid'
 USER_ID = 'userid'
 ORDER_STATE = 'state'
 STOCK = 'stock'
 PASSWORD = 'password'
-USERNAME = 'userName'
+USERNAME = 'username'
 MAIL = 'mail'
+DESC = 'desc'
+PRO_LABELS = [PROID, NAME, PRICE, PICTURE, NUM, DESC]
+
 
 def query_product(pro_id):
     """
@@ -64,6 +67,7 @@ def product2dict(pro: Product, ret = None):
     ret[PRICE] = float(pro.price)
     ret[PICTURE] = pro.picture
     ret[STOCK] = pro.num
+    ret[DESC] = pro.desc
     return ret
 
 def get_pro_detail_by_id(pro_id):
@@ -93,6 +97,7 @@ def new_order(form):
     print(order)
     db_session.add(order)
     db_session.commit()
+    return order.orderid
 
 def pay_order(orderid):
     order = query_order(orderid)
@@ -114,4 +119,4 @@ def new_user(form):
     user = User(username, form[PASSWORD])
     db_session.add(user)
     db_session.commit()
-    return True
+    return user

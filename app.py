@@ -20,15 +20,17 @@ def hello_world():
 @app.route('/login', methods=[POST])
 def login():
     print(request.form)
-    user = request.form['userName']
+    user = request.form['username']
     pwd = request.form['password']
 
-    token = check_user_pwd(user, pwd)
+    succ, payload = check_user_pwd(user, pwd)
 
-    reps = wrap_data(
-        CODE_SUCCESS, {'token': token}
-                     )
-    return reps
+    if succ:
+        return wrap_data(
+            CODE_SUCCESS, payload
+                         )
+    else:
+        return wrap_data(CODE_FAIL, None, payload)
 
 
 @app.route('/products/page/<page>')
@@ -47,20 +49,25 @@ def get_products(page):
 
 @app.route('/products/<pro_id>')
 def get_product_detail(pro_id):
-    product:Product = get_pro_detail_by_id(pro_id)
-    return product
+    try:
+        product = get_pro_detail_by_id(pro_id)
+        print(product)
+        return wrap_data(CODE_SUCCESS, product)
+    except Exception as e:
+        return wrap_data(CODE_FAIL, None, e)
 
 
 @app.route('/orders/<user_id>')
 def get_user_orders(user_id):
     orders = get_orders_by_id(user_id)
-    return jsonify(orders)
+    # print(type(orders), type(orders))
+    return wrap_data(CODE_SUCCESS, {'orders': orders})
 
 @app.route('/orders', methods=[POST])
 def create_order():
     print(request.form)
-    new_order(request.form)
-    return ''
+    orderid = new_order(request.form)
+    return wrap_data(CODE_SUCCESS, {'orderid': orderid})
 
 # 单笔交易
 @app.route('/orders/<orderid>', methods=[POST])
@@ -82,7 +89,9 @@ def payorders():
 def  create_user():
     print(request.form)
     succ = new_user(request.form)
-    if succ: return wrap_data(CODE_SUCCESS)
+    if succ:
+        print(succ.id)
+        return wrap_data(CODE_SUCCESS, {'username': succ.name, 'password': succ.pwd, 'userid': succ.id})
     else: return wrap_data(CODE_FAIL, None,
                            '该用户名好像已经被使用过了/(ㄒoㄒ)/~~')
 
