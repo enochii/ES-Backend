@@ -6,7 +6,7 @@ def check_user_pwd(username, pwd):
     try:
         u:User = User.query.filter(User.name == username).first()
         if u.pwd == pwd:
-            return True, {'token': 'token', 'userid':u.id}
+            return True, {'token': 'token', 'userid':u.id, 'username':u.name}
         else:
             return False, '密码好像错了哦(⊙o⊙)？'
     except Exception as e:
