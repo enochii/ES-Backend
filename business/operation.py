@@ -35,6 +35,17 @@ def query_order(order_id):
     return Order.query.filter(Order.orderid == order_id).first()
 
 
+def get_unpaid_orders_by_id(user_id):
+    """
+        根据用户 id 获取未付款的订单信息
+        :param user_id:
+        :return:
+        """
+    orders = Order.query.filter(Order.userid == user_id, Order.state == 0).all()
+    dtos = [order2dict(order) for order in orders]
+    print(dtos)
+    return dtos
+
 def get_orders_by_id(user_id):
     """
     根据用户 id 获取对应的订单信息
@@ -86,6 +97,7 @@ def order2dict(order: Order):
     ret[PROID] = order.proid
     ret[USER_ID] = order.userid
     ret[ORDER_STATE] = order.state
+    ret[NUM] = order.num
     # 需要到数据库取 该产品的数据
     product = query_product(order.proid)
     product2dict(product, ret)
@@ -120,3 +132,15 @@ def new_user(form):
     db_session.add(user)
     db_session.commit()
     return user
+
+
+def rm_cart(orderid):
+    try :
+        order = Order.query.filter(Order.orderid == orderid).first()
+        print('delete %d' % order.orderid)
+        db_session.delete(order)
+        db_session.commit()
+        return True
+    except Exception as e:
+        print(e)
+        return str(e)

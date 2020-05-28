@@ -4,7 +4,8 @@ import json
 from auth.auth import check_user_pwd, wrap_data
 from db.database import init_db, db_session, engine, PRODUCT_PER_PAGE
 from db.models import Product
-from business.operation import get_pro_detail_by_id, get_orders_by_id, row_proxy2dict, new_order, new_user, pay_order
+from business.operation import get_pro_detail_by_id, get_orders_by_id, row_proxy2dict, new_order, new_user, pay_order, \
+    get_unpaid_orders_by_id, rm_cart
 
 app = Flask(__name__)
 
@@ -63,6 +64,14 @@ def get_user_orders(user_id):
     # print(type(orders), type(orders))
     return wrap_data(CODE_SUCCESS, {'orders': orders})
 
+
+@app.route('/orders/unpaid/<user_id>')
+def get_user_unpaid_orders(user_id):
+    orders = get_unpaid_orders_by_id(user_id)
+    # print(type(orders), type(orders))
+    return wrap_data(CODE_SUCCESS, {'orders': orders})
+
+
 @app.route('/orders', methods=[POST])
 def create_order():
     print(request.form)
@@ -75,6 +84,15 @@ def payorder(orderid):
     # 这里合理是要做检查的
     pay_order(orderid)
     return ''
+
+
+@app.route('/orders/<orderid>', methods=['DELETE'])
+def rmorder(orderid):
+    # 这里合理是要做检查的
+    succ = rm_cart(orderid)
+    if succ is True: return wrap_data(CODE_SUCCESS)
+    else: return wrap_data(CODE_FAIL,msg= succ + '😚')
+
 
 @app.route('/orders/pay', methods=[POST])
 def payorders():
