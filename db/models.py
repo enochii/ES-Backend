@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DECIMAL
+from sqlalchemy import Column, Integer, String, Float
+import sqlalchemy
 from db.database import Base
 
 # 用户
@@ -25,9 +26,9 @@ class Product(Base):
     proid = Column(Integer, primary_key=True)
     name = Column(String(100), unique=True)
     num = Column(Integer)
-    price = Column(DECIMAL)
+    price = Column(Float)
     picture = Column(String(200))
-    desc = Column(String(400))
+    descr = Column(String(400))
 
     def __init__(self, name:not None, price, picture):
         self.name = name

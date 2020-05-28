@@ -1,11 +1,18 @@
 from sqlalchemy import create_engine
+import pymysql
+pymysql.install_as_MySQLdb()
+
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 PRODUCT_PER_PAGE = 8
 
 # Windows 记得换成 ///
-engine = create_engine('sqlite:///db/web.db', convert_unicode=True)
+# engine = create_engine('sqlite:///db/web.db', convert_unicode=True)
+
+# mysql+mysqldb://<user>:<password>@<host>[:<port>]/<dbname>
+engine = create_engine('mysql+mysqldb://web:web@47.98.247.28:3306/webdb', convert_unicode=True)
+
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))

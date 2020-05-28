@@ -19,7 +19,7 @@ STOCK = 'stock'
 PASSWORD = 'password'
 USERNAME = 'username'
 MAIL = 'mail'
-DESC = 'desc'
+DESC = 'descr'
 PRO_LABELS = [PROID, NAME, PRICE, PICTURE, NUM, DESC]
 
 
@@ -78,7 +78,7 @@ def product2dict(pro: Product, ret = None):
     ret[PRICE] = float(pro.price)
     ret[PICTURE] = pro.picture
     ret[STOCK] = pro.num
-    ret[DESC] = pro.desc
+    ret[DESC] = pro.descr
     return ret
 
 def get_pro_detail_by_id(pro_id):
