@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request
 import json
 
+from flask_cors import CORS
+
 from auth.auth import check_user_pwd, wrap_data
 from db.database import init_db, db_session, engine, PRODUCT_PER_PAGE
 from db.models import Product
@@ -8,6 +10,9 @@ from business.operation import get_pro_detail_by_id, get_orders_by_id, row_proxy
     get_unpaid_orders_by_id, rm_cart
 
 app = Flask(__name__)
+
+# 跨域
+CORS(app, supports_credentials=True)
 
 POST = 'POST'
 CODE_SUCCESS = 1

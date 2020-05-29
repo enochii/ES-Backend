@@ -3,3 +3,5 @@ Flask-SQLAlchemy
 Jinja2
 SQLAlchemy
 Werkzeug
+
+flask-cors
