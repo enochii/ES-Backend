@@ -1,5 +1,6 @@
+pymysql
 Flask
-Flask-SQLAlchemy
+#Flask-SQLAlchemy
 Jinja2
 SQLAlchemy
 Werkzeug
