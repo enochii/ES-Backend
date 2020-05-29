@@ -102,11 +102,15 @@ def rmorder(orderid):
 @app.route('/orders/pay', methods=[POST])
 def payorders():
     # 这里合理是要做检查的
-    orders = json.loads(request.form['orders'])
-    print(orders)
-    for orderid in orders:
-        pay_order(int(orderid))
-    return ''
+    try:
+        orders = json.loads(request.form['orders'])
+        print(orders)
+        for orderid in orders:
+            pay_order(int(orderid))
+        return wrap_data(CODE_SUCCESS)
+    except Exception as e:
+        print(e.with_traceback())
+        return wrap_data(CODE_FAIL, None, str(e))
 
 @app.route('/users', methods=[POST])
 def  create_user():
