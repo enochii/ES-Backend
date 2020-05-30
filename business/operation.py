@@ -34,6 +34,9 @@ def query_product(pro_id):
 def query_order(order_id):
     return Order.query.filter(Order.orderid == order_id).first()
 
+def query_orders(userid):
+    return Order.query.filter(Order.userid == userid).all()
+
 
 def get_unpaid_orders_by_id(user_id):
     """
@@ -105,11 +108,17 @@ def order2dict(order: Order):
 
 
 def new_order(form):
-    order = Order(form[PROID], form[NUM], form[USER_ID])
+    userid = int(form[USER_ID])
+    if userid == -1:
+        uuid = form['uuid']
+        _, user = try_new_user(uuid, 'nopwd')
+        userid = user.id
+
+    order = Order(form[PROID], form[NUM], userid)
     print(order)
     db_session.add(order)
     db_session.commit()
-    return order.orderid
+    return order.orderid, userid
 
 def pay_order(orderid):
     order = query_order(orderid)
@@ -123,16 +132,20 @@ def pay_order(orderid):
         return False
     return True
 
-def new_user(form):
-    username = form[USERNAME]
+# 尝试创建用户，用户已存在则直接返回
+def try_new_user(username, pwd):
     exist_username = User.query.filter(User.name == username).all()
     if len(exist_username) != 0:
-        return False
-    user = User(username, form[PASSWORD])
+        return False, exist_username[0]
+
+    user:User = new_user_commit(username, pwd)
+    return True, user
+
+def new_user_commit(username, pwd) :
+    user = User(username, pwd)
     db_session.add(user)
     db_session.commit()
     return user
-
 
 def rm_cart(orderid):
     try :
@@ -144,3 +157,11 @@ def rm_cart(orderid):
     except Exception as e:
         print(e)
         return str(e)
+
+def transfer_cart(anony_id, userid):
+    orders = query_orders(anony_id)
+    for order in orders:
+        # 易主
+        order.userid = userid
+        print(order.userid, userid)
+    db_session.commit()

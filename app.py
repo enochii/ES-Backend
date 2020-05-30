@@ -6,8 +6,9 @@ from flask_cors import CORS
 from auth.auth import check_user_pwd, wrap_data
 from db.database import init_db, db_session, engine, PRODUCT_PER_PAGE
 from db.models import Product
-from business.operation import get_pro_detail_by_id, get_orders_by_id, row_proxy2dict, new_order, new_user, pay_order, \
-    get_unpaid_orders_by_id, rm_cart
+from business.operation import get_pro_detail_by_id, get_orders_by_id, row_proxy2dict, new_order, try_new_user, \
+    pay_order, \
+    get_unpaid_orders_by_id, rm_cart, USERNAME, PASSWORD, transfer_cart
 
 app = Flask(__name__)
 
@@ -26,17 +27,21 @@ def hello_world():
 @app.route('/login', methods=[POST])
 def login():
     print(request.form)
-    user = request.form['username']
-    pwd = request.form['password']
+    form = request.form
+    user = form['username']
+    pwd = form['password']
+    uu_userid = form['userid']
+    print(form)
 
     succ, payload = check_user_pwd(user, pwd)
 
-    if succ:
-        return wrap_data(
-            CODE_SUCCESS, payload
-                         )
-    else:
+    if succ is False:
         return wrap_data(CODE_FAIL, None, payload)
+    # success
+    transfer_cart(uu_userid, payload['userid'])
+    return wrap_data(
+        CODE_SUCCESS, payload
+    )
 
 
 @app.route('/products/page/<page>')
@@ -80,8 +85,9 @@ def get_user_unpaid_orders(user_id):
 @app.route('/orders', methods=[POST])
 def create_order():
     print(request.form)
-    orderid = new_order(request.form)
-    return wrap_data(CODE_SUCCESS, {'orderid': orderid})
+    orderid, userid = new_order(request.form)
+    # uuid 可能需要注册匿名用户
+    return wrap_data(CODE_SUCCESS, {'orderid': orderid, 'userid': userid})
 
 # 单笔交易
 @app.route('/orders/<orderid>', methods=[POST])
@@ -115,10 +121,12 @@ def payorders():
 @app.route('/users', methods=[POST])
 def  create_user():
     print(request.form)
-    succ = new_user(request.form)
+    form = request.form
+    username, pwd = form[USERNAME], form[PASSWORD]
+    succ, user = try_new_user(username, pwd)
     if succ:
-        print(succ.id)
-        return wrap_data(CODE_SUCCESS, {'username': succ.name, 'password': succ.pwd, 'userid': succ.id})
+        print(user.id)
+        return wrap_data(CODE_SUCCESS, {'username': user.name, 'password': user.pwd, 'userid': user.id})
     else: return wrap_data(CODE_FAIL, None,
                            '该用户名好像已经被使用过了/(ㄒoㄒ)/~~')
 
